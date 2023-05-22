@@ -2,8 +2,8 @@
 Esercizio di gruppo, gruppo due
 
 Membri:
-Manuel Ehrlich
-Manuela Montesano
+Manuel Ehrlich,
+Manuela Montesano,
 Leonardo Pagani
 
 Regole:
