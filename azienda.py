@@ -13,19 +13,19 @@ classe con lista dipendenti (oggetti), accesso con password per il ceo
 
 switch menu, login, pw per dipendenti
 
-Menu:
-- dipendente
-- gestore
-- esci
+Menu generale:
+1 dipendente
+2 gestore
+3 esci
 
-Menu dipendenti:
-Chiedi pw
+Menu dipendenti (1):
+Chiedi nome, cognome, pw
 - Visualizza ferie
 - visualizza retribuzione
 - visualizza report
 - esci
 
-Menu gestore:
+Menu gestore (2):
 Chiedi pw
 - Aggiungi dipendente
 - Modifica dipendente
@@ -36,7 +36,18 @@ Chiedi pw
 Menu  modifica ...
 
 """
+# Importa librerie
 import random
+    
+
+# Setta variabili
+lista_dipendenti = []
+admin_password = "12345678"
+
+
+# -------------------------------------------- CLASSI --------------------------------------------------------
+
+# Classe padre
 class Persona:
     # attributi: nome, cognome, password
     def __init__(self, nome, cognome):
@@ -46,6 +57,7 @@ class Persona:
     def to_string(self):
         return f"nome: {self.nome}, cognome: {self.cognome}"
 
+# Classe figlio
 class Dipendente(Persona):
     password = ""
     def __init__(self, nome, cognome, inquadramento_aziendale, reparto):
@@ -63,124 +75,184 @@ class Dipendente(Persona):
     def to_string(self):
         return super().to_string() + f" lavora nel reparto {self.reparto} con un inquadramento_aziendale {self.inquadramento_aziendale}"
 
-
     # attributi: inquadramento_aziendale, reparto
     # metodo: calcolo_retribuzione, to_string (ereditato), scelta ferie
+
+
+# -------------------------------------------- FUNZIONI --------------------------------------------------------
+
+# Funzione per verificare che l'utente sia presente e conosca la pw corretta
+def controllo_password_dipendente(lista_dipendenti):
+    nome = input("\nNome: ")
+    cognome = input("Cognome: ")
+
+    for dipendente in lista_dipendenti:
+
+        if dipendente.nome == nome and dipendente.cognome == cognome:
+            password = input("Password: ")
+
+            if password == dipendente.password:
+                print("\nPassword corretta.") # inserire menù dipendente
+
+            else:
+                print("\nPassword errata.")
+
+            return True 
+    else:
+        print("\nErrore: dipendente non registrato.\n")
+        return False
+
+# Funzionalita per gestore: aggiungi dipendenti
+def aggiungi_dipendente():
+    print("Stai aggiungendo un nuovo dipendente")
+    nome=str(input("Inserisci il nome: "))
+    cognome=str(input("Inserisci il cognome: "))
+    inquadramento_aziendale=str(input("Inserisci l'inquadramento aziendale: "))
+    reparto= str(input("Inserisci il reparto: "))
+    dipendente=Dipendente(nome,cognome,inquadramento_aziendale,reparto)
+    if lista_dipendenti==[]:
+        print("Non ci sono dipendenti presenti nella lista")
+    else:
+        lista_dipendenti.append(dipendente)
+
+# Funzionalita per gestore: modifica dipendenti
+def modifica_dipendente():
+    report()
+    indice_dipendente = int(input("Seleziona il dipendente da modificare: ").strip())
+    nuovo_inquadramento_aziendale = str(input("Inserisci il nuovo inquadramento aziendale"))
+    lista_dipendenti[indice_dipendente].inquadramento_aziendale = nuovo_inquadramento_aziendale
+    print("Modifica avvenuta con successo")
     
+# Funzionalita per gestore: rimuovi dipendenti
+def rimuovi_dipendente():
+    report()
+    indice_dipendente = int(input("Seleziona il dipendente che hai deciso di rimuovere").strip())
+    lista_dipendenti.pop(indice_dipendente)
+    print("Dipendente rimosso")
+
+# Funzionalita per gestore: stampa il report
+def report():
+    if lista_dipendenti == []:
+            print("Non ci sono dipendenti nella lista")
+    else:
+        for iteratore, elemento in enumerate(lista_dipendenti):
+            print(f"{iteratore}. {elemento.to_string()}")
+            
+# MENU scelte dipendente: stampa retribuzione o gestisci ferie    
+def menu_dipendente():
+    print("Scegli l'opzione desiderata: ")
+    print("1. Visualizza la propria retribuzione")
+    print("2. Scegli data ferie")
+    print("3. Esci")
+
+    variabile = input().strip()         
+
+    if variabile == "1":
+        pass        # Da aggiungere
+     
+    elif variabile == "2":
+        pass        # Da aggiungere
+
+    elif variabile == "3":
+        return "esci"
+    
+    else:
+        print("Scegliere un comando valido")
+
+
+# -------------------------------------------- BLOCCO CODICE PRINCIPALE --------------------------------------------------------
+
+# MENU scelta gestore: gestisci lista dipendenti (CRUD) o stampa report
+def menu_gestore():
+    print("Scegli l'opzione desiderata: ")
+    print("1. Aggiungi dipendenti")
+    print("2. Modificare un dipendente")
+    print("3. Rimuovi dipendenti")
+    print("4. Report")
+    print("5. Esci")
+
+    variabile = input().strip()         
+
+    if variabile == "1":
+        aggiungi_dipendente()
+     
+    elif variabile == "2":
+        modifica_dipendente()
+
+    elif variabile == "3":
+        rimuovi_dipendente()
+    
+    elif variabile == "4":
+        report()
+
+    elif variabile == "5":
+        return "esci"
+    
+    else:
+        print("Scegliere un comando valido")
+
+
+# Inizio codice
 dipendente1 = Dipendente("nome", "cognome", 1, 2)
+dipendente1.genera_password(8)
+print(dipendente1.nome, dipendente1.cognome)
+dip1 = Dipendente("Mario","Rossi",1,2)
+print(dip1.nome, dip1.cognome)
+dip2 = Dipendente("Luigi","Bianchi",3,4)
+print(dip2.nome, dip2.cognome)
+dip1.genera_password(4)
+dip2.genera_password(4)
+lista_dipendenti.append(dip1)
+lista_dipendenti.append(dipendente1)
+lista_dipendenti.append(dip2)
+print(dip1.password)
+print(dip2.password)
 print("------------------------------")
-print(dipendente1.to_string())
+print(lista_dipendenti)
+for dipendente in lista_dipendenti:
+    print(dipendente1.to_string())
 print("------------------------------")
 
-# lista_dipendenti (contiene oggetti)
-# funzioni aggiungi dipendenti, rimuovi dipendenti, modifica dipendenti, report
 
-def switch_menu():
-    # esci
-    # gestore
-    # dipendente
-    pass
+# Inizia I/O: ripeti richiesta scelta per output errati, altrimenti esci
+flag = True
+while not flag:
+    print("Scegli il tipo di account: ")
+    print("1. Account gestore")
+    print("2. Account dipendente")
+    print("3. Esci")
 
-def switch_menu_gestore():
-    # aggiungi_dipendenti()
-    # modifica_dipendenti()
-    # rimuovi_dipendenti()
-    # report()
-    pass
+    variabile = input().strip()      
 
-"""
-esci = False
-while not esci:
-    esci = switch_menu()
-"""
-
- 
-
-"""
-
-class ORDINE:
-    lista_ordinazioni = []
-    nome = ""
-    conto_totale = 0
-    MENU = [("antipasto", 5), ("primo piatto", 10), ("secondo piatto", 15), ("dolce", 3)]
-
-    # Settare nome
-    def chiedi_nome(self):
-        self.nome = input("Come ti chiami?\n")
-    
-    def esci(self):
-        print("Hai scelto di uscire, arriverci!")
-        return None
-
-    def aggiungi_piatto(self):
-        print("I piatti disponibili sono: ")
-        for contatore in range(4):
-            print(f"{contatore}. {self.MENU[contatore][0]} costa {self.MENU[contatore][1]}€")
-        
-        piatto_scelto = int(input().strip())
-
-        self.lista_ordinazioni += [ordinazione.MENU[piatto_scelto]]
-
-    def modifica_piatto(self):
-        print("I piatti nell'ordinazione sono: ")
-        for contatore in range(len(self.lista_ordinazioni)):
-            print(f"{contatore}. {self.lista_ordinazioni[contatore][0]} costa {self.lista_ordinazioni[contatore][1]}€")
-
-        print ("Quale desideri rimuovere?\n")
-        piatto_da_rimuovere = int(input().strip())
-        print("Con quale piatto lo vuoi rimpiazzare? \nI piatti disponibili sono: ")
-        for contatore in range(4):
-            print(f"{contatore}. {self.MENU[contatore][0]} costa {self.MENU[contatore][1]}€")
-        
-        piatto_da_aggiungere = int(input().strip())
-        self.lista_ordinazioni[piatto_da_rimuovere] = self.MENU[piatto_da_aggiungere]
-
-
-    def ordinare_conto(self):
-        # Resetta conto
-        self.conto_totale = 0
-        print("I piatti ordinati sono: ")
-        for contatore in range(len(self.lista_ordinazioni)):
-            print(f"{contatore}. {self.lista_ordinazioni[contatore][0]} costa {self.lista_ordinazioni[contatore][1]}€")
-            self.conto_totale += self.lista_ordinazioni[contatore][1]
-        
-        print(f"Il conto totale di {self.nome} è {self.conto_totale}")
-
-
-    def switch_primo(self):
-        print("Scegli l'opzione desiderata: ")
-        print("1. Ordina un piatto")
-        print("2. Modificare un piatto")
-        print("3. Ordinare il conto")
-        print("4. Esci")
-
-        variabile = input().strip()         
-
-        if variabile == "1":
-            self.aggiungi_piatto()
-
-        elif variabile == "2":
-            self.modifica_piatto()
-
-        elif variabile == "3":
-            self.ordinare_conto()
-        
-        elif variabile == "4":
-            self.esci()
-            return "esci"
-        
+    if variabile == "1":
+        # Chiedi e controlla la pasword
+        print("Stai entranto come gestore, digita la password")
+        password_digitata = input()
+        if password_digitata != admin_password:
+            print("Password errata! Chiusura del programma in corso...")
         else:
-            print("L'ordine non è stato eseguito correttamente")
-
-
-ordinazione = ORDINE()
-ordinazione.chiedi_nome()
-
-esci = False
-while not esci:
-    esci = ordinazione.switch_primo()
-
-"""
-
+            # Esegui azioni fino che l'utente non ha finito  
+            esci = False
+            while not esci:
+                esci = menu_gestore()
+     
+    elif variabile == "2":
+        # Chiedi e controlla la pasword
+        print("Stai entranto come gestore, digita la password")
+        password_digitata = input()
+        if controllo_password_dipendente(lista_dipendenti):        # Chiamare funzione Leo
+            # Esegui fino che l'utente non ha finito
+            esci = False
+            while not esci:
+                esci = menu_dipendente()
+        else: 
+            print("Password errata!")
+    
+    elif variabile == "3":
+        print("esci")
+        flag = True
+    
+    else:
+        print("Scegliere un comando valido")
 
 
