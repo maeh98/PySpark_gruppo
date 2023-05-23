@@ -35,6 +35,16 @@ Chiedi pw
 
 Menu  modifica ...
 
+ToDo
+- aggiungere calcolo salario
+- aggiungere controllo: esiste già un dipendente all'aggiunta?
+- Roadmap
+- risolvere bug
+
+ROADMAP
+gestione permessi (ferie/ore uscita/malattia...)
+
+
 """
 # Importa librerie
 import random
@@ -93,11 +103,13 @@ def controllo_password_dipendente(lista_dipendenti):
 
             if password == dipendente.password:
                 print("\nPassword corretta.") # inserire menù dipendente
+                return True 
 
             else:
                 print("\nPassword errata.")
+                return False
 
-            return True 
+            
     else:
         print("\nErrore: dipendente non registrato.\n")
         return False
@@ -105,15 +117,13 @@ def controllo_password_dipendente(lista_dipendenti):
 # Funzionalita per gestore: aggiungi dipendenti
 def aggiungi_dipendente():
     print("Stai aggiungendo un nuovo dipendente")
-    nome=str(input("Inserisci il nome: "))
-    cognome=str(input("Inserisci il cognome: "))
-    inquadramento_aziendale=str(input("Inserisci l'inquadramento aziendale: "))
-    reparto= str(input("Inserisci il reparto: "))
-    dipendente=Dipendente(nome,cognome,inquadramento_aziendale,reparto)
-    if lista_dipendenti==[]:
-        print("Non ci sono dipendenti presenti nella lista")
-    else:
-        lista_dipendenti.append(dipendente)
+    nome = str(input("Inserisci il nome: "))
+    cognome = str(input("Inserisci il cognome: "))
+    inquadramento_aziendale = str(input("Inserisci l'inquadramento aziendale: "))
+    reparto = str(input("Inserisci il reparto: "))
+    dipendente = Dipendente(nome,cognome,inquadramento_aziendale,reparto)
+    # aggiungi funzione controllo
+    lista_dipendenti.append(dipendente)
 
 # Funzionalita per gestore: modifica dipendenti
 def modifica_dipendente():
@@ -159,9 +169,6 @@ def menu_dipendente():
     else:
         print("Scegliere un comando valido")
 
-
-# -------------------------------------------- BLOCCO CODICE PRINCIPALE --------------------------------------------------------
-
 # MENU scelta gestore: gestisci lista dipendenti (CRUD) o stampa report
 def menu_gestore():
     print("Scegli l'opzione desiderata: ")
@@ -186,16 +193,16 @@ def menu_gestore():
         report()
 
     elif variabile == "5":
-        return "esci"
+        return "esci"       # True
     
     else:
         print("Scegliere un comando valido")
 
 
+# -------------------------------------------- BLOCCO CODICE PRINCIPALE --------------------------------------------------------
+
+
 # Inizio codice
-dipendente1 = Dipendente("nome", "cognome", 1, 2)
-dipendente1.genera_password(8)
-print(dipendente1.nome, dipendente1.cognome)
 dip1 = Dipendente("Mario","Rossi",1,2)
 print(dip1.nome, dip1.cognome)
 dip2 = Dipendente("Luigi","Bianchi",3,4)
@@ -203,18 +210,19 @@ print(dip2.nome, dip2.cognome)
 dip1.genera_password(4)
 dip2.genera_password(4)
 lista_dipendenti.append(dip1)
-lista_dipendenti.append(dipendente1)
 lista_dipendenti.append(dip2)
 print(dip1.password)
 print(dip2.password)
 print("------------------------------")
 print(lista_dipendenti)
 for dipendente in lista_dipendenti:
-    print(dipendente1.to_string())
+    print(dipendente.to_string())
 print("------------------------------")
 
 
 # Inizia I/O: ripeti richiesta scelta per output errati, altrimenti esci
+# flag = False
+
 flag = True
 while not flag:
     print("Scegli il tipo di account: ")
@@ -238,7 +246,7 @@ while not flag:
      
     elif variabile == "2":
         # Chiedi e controlla la pasword
-        print("Stai entranto come gestore, digita la password")
+        print("Stai entranto come dipendente, digita la password")
         password_digitata = input()
         if controllo_password_dipendente(lista_dipendenti):        # Chiamare funzione Leo
             # Esegui fino che l'utente non ha finito
