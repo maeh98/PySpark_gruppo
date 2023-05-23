@@ -42,7 +42,10 @@ ToDo
 - risolvere bug
 
 ROADMAP
+modifica tutto
 gestione permessi (ferie/ore uscita/malattia...)
+aggiungere reparto
+unicita utente
 
 
 """
@@ -117,26 +120,56 @@ def controllo_password_dipendente(lista_dipendenti):
 # Funzionalita per gestore: aggiungi dipendenti
 def aggiungi_dipendente():
     print("Stai aggiungendo un nuovo dipendente")
-    nome = str(input("Inserisci il nome: "))
-    cognome = str(input("Inserisci il cognome: "))
+    nome = str(input("Inserisci il nome: ")).strip()
+    cognome = str(input("Inserisci il cognome: ")).strip()
     inquadramento_aziendale = str(input("Inserisci l'inquadramento aziendale: "))
     reparto = str(input("Inserisci il reparto: "))
     dipendente = Dipendente(nome,cognome,inquadramento_aziendale,reparto)
+    # Fai in modo che il nuovo dipendente abbia una nuova password
+    dipendente.genera_password(8)
     # aggiungi funzione controllo
     lista_dipendenti.append(dipendente)
 
 # Funzionalita per gestore: modifica dipendenti
+"""
 def modifica_dipendente():
     report()
-    indice_dipendente = int(input("Seleziona il dipendente da modificare: ").strip())
-    nuovo_inquadramento_aziendale = str(input("Inserisci il nuovo inquadramento aziendale"))
+    indice_dipendente = int(input("Seleziona il dipendente da modificare: \n").strip())
+    nuovo_inquadramento_aziendale = int(input("Inserisci il nuovo inquadramento aziendale\n").strip())
     lista_dipendenti[indice_dipendente].inquadramento_aziendale = nuovo_inquadramento_aziendale
     print("Modifica avvenuta con successo")
-    
+"""
+def modifica_dipendente():
+    report()
+    flag = False
+    while not flag: 
+        indice_dipendente = input("Seleziona il dipendente da modificare: \n").strip()
+        if controllo(0, len(lista_dipendenti), indice_dipendente):
+            indice_dipendente_int = int(indice_dipendente)
+            flag = True
+
+    flag = False
+    while not flag: 
+        nuovo_inquadramento_aziendale = input("Inserisci il nuovo inquadramento aziendale\n").strip()
+        if controllo(1, 9, nuovo_inquadramento_aziendale):
+            nuovo_inquadramento_aziendale_int = int(nuovo_inquadramento_aziendale)
+            flag = True
+
+    lista_dipendenti[indice_dipendente_int].inquadramento_aziendale = nuovo_inquadramento_aziendale_int
+    print("Modifica avvenuta con successo")
+
+
+def controllo(a, b, elemento):
+    valori_accettabili = [str(iteratore) for iteratore in range(a, b)]
+    if elemento in valori_accettabili:
+        return True
+    else:
+        return False
+
 # Funzionalita per gestore: rimuovi dipendenti
 def rimuovi_dipendente():
     report()
-    indice_dipendente = int(input("Seleziona il dipendente che hai deciso di rimuovere").strip())
+    indice_dipendente = int(input("Seleziona il dipendente che hai deciso di rimuovere\n").strip())
     lista_dipendenti.pop(indice_dipendente)
     print("Dipendente rimosso")
 
@@ -204,26 +237,19 @@ def menu_gestore():
 
 # Inizio codice
 dip1 = Dipendente("Mario","Rossi",1,2)
-print(dip1.nome, dip1.cognome)
 dip2 = Dipendente("Luigi","Bianchi",3,4)
-print(dip2.nome, dip2.cognome)
 dip1.genera_password(4)
 dip2.genera_password(4)
 lista_dipendenti.append(dip1)
 lista_dipendenti.append(dip2)
-print(dip1.password)
-print(dip2.password)
-print("------------------------------")
-print(lista_dipendenti)
-for dipendente in lista_dipendenti:
-    print(dipendente.to_string())
-print("------------------------------")
+#print(dip1.password)
+#print(dip2.password)
+
 
 
 # Inizia I/O: ripeti richiesta scelta per output errati, altrimenti esci
-# flag = False
-
-flag = True
+flag = False
+#flag = True
 while not flag:
     print("Scegli il tipo di account: ")
     print("1. Account gestore")
@@ -246,6 +272,10 @@ while not flag:
      
     elif variabile == "2":
         # Chiedi e controlla la pasword
+        print("Digita nome")
+        nome = input().strip()
+        print("Digita cognome")
+        cognome = input().strip()
         print("Stai entranto come dipendente, digita la password")
         password_digitata = input()
         if controllo_password_dipendente(lista_dipendenti):        # Chiamare funzione Leo
