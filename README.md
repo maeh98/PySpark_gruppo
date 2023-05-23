@@ -15,7 +15,7 @@ Regole:
 Istruzioni:
 Un'azienda ha bisogno di un app per gestione le proprie risorse umane-
 Release 1.0: 
-Bisogna integrare un sistema di registrazione dipendenti con funzionalità CRUD (create, remove, update, delete) e che generi automaticamente un report quando richiesto.
+Bisogna integrare un sistema di registrazione dipendenti con funzionalità CRUD (aggiungere dipendenti, eliminarli, modificare le loro informazioni) e che generi automaticamente un report quando richiesto. 
 Release 2.0:
 Bisogna implementare una funzionalità di calcolo delle retribuzioni e della gestione ferie.
 
