@@ -54,7 +54,7 @@ import random
 
 # Setta variabili
 lista_dipendenti = []
-reparti = {1: 'HR', 2: "ADMIN"}
+reparti = {1: "HR", 2: "ADMIN"}
 admin_password = "12345678"
 utente = -1
 
@@ -77,7 +77,7 @@ class Persona:
 class Dipendente(Persona):
     password = ""
     primo_ingresso = True
-    ore_ferie = 0
+    ore_Ferie = 0
 
     def __init__(self, nome, cognome, inquadramento_aziendale, reparto):
         super().__init__(nome, cognome)
@@ -160,6 +160,40 @@ class Dipendente(Persona):
             + f" lavora nel reparto {self.reparto} con un inquadramento_aziendale {self.inquadramento_aziendale}"
         )
 
+    def calcola_stipendio(self):
+        stipendio_base = {1: 1200, 2: 1500, 3: 2000, 4: 3000}
+        coefficiente = {1: 1, 2: 1.1, 3: 1.2, 4: 1.3, 5: 1.4, 6: 1.5, 7: 2, 8: 2.5}
+        stipendio = (
+            stipendio_base[self.reparto] * coefficiente[self.inquadramento_aziendale]
+        )
+        print(f"Il tuo stipendio è: {stipendio}€")
+
+    # metodo per modificare le ferie
+    def settaFerie(self):
+        flag = True
+        while flag:
+            print("Aggiungi orario ferie")
+            print("Premi 1 per aggiornare le tue ferie 2 per uscire")
+            scelta = input("Inserisci la tua risposta\n")
+            if scelta == "1":
+                print("Puoi richiedere fino a un massimo di 5 ore di ferie")
+                nuove_ore = input("Inserisci le ore che vuoi richiedere\n")
+                if controllo(1, 6, nuove_ore):
+                    self.ore_Ferie = int(nuove_ore)
+                    print("Ferie accettate")
+                    flag = False
+                else:
+                    print("Inserire un comando valido")
+
+            elif scelta == "2":
+                print("Stai uscendo dal sistema...")
+                flag = False
+
+            else:
+                print(
+                    "Hai inserito un numero superiore a 5\n" "Inserisci numero valido\n"
+                )
+
     # attributi: inquadramento_aziendale, reparto
     # metodo: calcolo_retribuzione, to_string (ereditato), scelta ferie
 
@@ -172,7 +206,7 @@ def login():
     cognome = input("Digita cognome\n").strip()
     n_utente = controllo_esistenza_dipendente(nome, cognome, lista_dipendenti)
     if n_utente == "inesistente":
-        pass # da implementare
+        pass  # da implementare
     else:
         if lista_dipendenti[n_utente].primo_ingresso == True:
             print("È il tuo primo ingresso, digita la tua nuova password")
@@ -182,11 +216,11 @@ def login():
             lista_dipendenti[n_utente].primo_ingresso = False
 
         else:
-            if controllo_password_dipendente(lista_dipendenti, n_utente):  # Chiamare funzione Leo
+            if controllo_password_dipendente(lista_dipendenti, n_utente):
                 # Esegui fino che l'utente non ha finito
                 esci = False
                 while not esci:
-                    esci = menu_dipendente()
+                    esci = menu_dipendente(n_utente)
 
 
 def controllo_esistenza_dipendente(nome, cognome, lista_dipendenti):
@@ -214,29 +248,37 @@ def controllo_password_dipendente(lista_dipendenti, n_utente):
         return False
 
 
-
 # Funzionalita per gestore: aggiungi dipendenti
-
 def aggiungi_dipendente():
     print("Stai aggiungendo un nuovo dipendente")
     nome = str(input("Inserisci il nome: ")).strip()
     cognome = str(input("Inserisci il cognome: ")).strip()
+    # Controlla se l'utente esiste giá
+    if controllo_esistenza_dipendente(nome, cognome, lista_dipendenti) != "inesistente":
+        print("L'utente inserito è giá presente")
+        return None
+
     inquadramento_aziendale = input("Inserisci l'inquadramento aziendale: ").strip()
     reparto = input("Inserisci il reparto: ").strip()
     # aggiungi funzione controllo
-    if controllo(1,9,inquadramento_aziendale) and controllo(1,5,reparto):
-        dipendente = Dipendente(nome,cognome,int(inquadramento_aziendale),int(reparto))
+    if controllo(1, 9, inquadramento_aziendale) and controllo(1, 5, reparto):
+        dipendente = Dipendente(
+            nome, cognome, int(inquadramento_aziendale), int(reparto)
+        )
         lista_dipendenti.append(dipendente)
         print("Dipendente aggiunto con successo")
     else:
-        print("Errore,devi inserire un valore\n"
-              "tra 0 e 8 per l'inquadramento aziendale\n "
-              "e un valore tra 1 e 4 per il reparto\n")
+        print(
+            "Errore,devi inserire un valore\n"
+            "tra 0 e 8 per l'inquadramento aziendale\n "
+            "e un valore tra 1 e 4 per il reparto\n"
+        )
+
 
 def modifica_dipendente():
     report()
     flag = False
-    while not flag: 
+    while not flag:
         indice_dipendente = input("Seleziona il dipendente da modificare: \n").strip()
         if controllo(0, len(lista_dipendenti), indice_dipendente):
             indice_dipendente_int = int(indice_dipendente)
@@ -244,7 +286,6 @@ def modifica_dipendente():
 
     flag = False
     while not flag:
-
         print("Scegli l'opzione desiderata: ")
         print("1. Modifica nome")
         print("2. Modifica cognome")
@@ -263,7 +304,7 @@ def modifica_dipendente():
 
         elif variabile == "3":
             flag2 = False
-            while not flag2: 
+            while not flag2:
                 nuovo_reparto = input("Inserisci il nuovo reparto\n").strip()
                 if controllo(1, 5, nuovo_reparto):
                     flag2 = True
@@ -271,11 +312,15 @@ def modifica_dipendente():
 
         elif variabile == "4":
             flag2 = False
-            while not flag2: 
-                nuovo_inquadramento_aziendale = input("Inserisci il nuovo inquadramento aziendale\n").strip()
+            while not flag2:
+                nuovo_inquadramento_aziendale = input(
+                    "Inserisci il nuovo inquadramento aziendale\n"
+                ).strip()
                 if controllo(1, 9, nuovo_inquadramento_aziendale):
                     flag2 = True
-            lista_dipendenti[indice_dipendente_int].inquadramento_aziendale = int(nuovo_inquadramento_aziendale)
+            lista_dipendenti[indice_dipendente_int].inquadramento_aziendale = int(
+                nuovo_inquadramento_aziendale
+            )
 
         elif variabile == "5":
             flag = True
@@ -284,10 +329,9 @@ def modifica_dipendente():
         else:
             print("Scegliere un comando valido")
             continue
-        
+
         print("Modifica avvenuta con successo")
         print(lista_dipendenti[indice_dipendente_int].to_string())
-
 
 
 def controllo(a, b, elemento):
@@ -318,19 +362,19 @@ def report():
 
 
 # MENU scelte dipendente: stampa retribuzione o gestisci ferie
-def menu_dipendente():
+def menu_dipendente(n_utente):
     print("Scegli l'opzione desiderata: ")
     print("1. Visualizza la propria retribuzione")
-    print("2. Scegli data ferie")
+    print("2. Aggiungi giorni ferie")
     print("3. Esci")
 
     variabile = input().strip()
 
     if variabile == "1":
-        pass  # Da aggiungere
+        lista_dipendenti[n_utente].calcolo_stipendio()
 
     elif variabile == "2":
-        pass  # Da aggiungere
+        lista_dipendenti[n_utente].settaFerie()
 
     elif variabile == "3":
         return "esci"
@@ -379,13 +423,12 @@ dip1.genera_password(4)
 dip2.genera_password(4)
 lista_dipendenti.append(dip1)
 lista_dipendenti.append(dip2)
-# print(dip1.password)
-# print(dip2.password)
+dip1.calcola_stipendio()
 
 
 # Inizia I/O: ripeti richiesta scelta per output errati, altrimenti esci
-flag = False
-# flag = True
+# flag = False
+flag = True
 while not flag:
     print("Scegli il tipo di account: ")
     print("1. Account gestore")
