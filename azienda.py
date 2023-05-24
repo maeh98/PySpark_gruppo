@@ -34,10 +34,11 @@ Per accedere ai due diversi menu, bisogna effettuare un login.
 Per i dipendenti ciò avviene tramite la funzione login(), che a sua volta 
 richiama le funzioni controllo_esistenza_dipendente() per verificare l'esistenza 
 dipendente nella lista, e controllo_password_dipendente() per il controllo password.
+Per i gestori avviene con un semplice controllo.
 
 
 ROADMAP
-
+- Avere piu gestori
 
 
 """
