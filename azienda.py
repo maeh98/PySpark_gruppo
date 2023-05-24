@@ -1,50 +1,43 @@
 """
-Un'azienda ha bisogno di un app per gestione le proprie risorse umane-
+Un'azienda ha bisogno di un'app per gestione le proprie risorse umane-
 Release 1.0: 
 Bisogna integrare un sistema di registrazione dipendenti con funzionalità CRUD (aggiungere dipendenti, eliminarli, modificare le loro informazioni) e che generi automaticamente un report quando richiesto. 
 Release 2.0:
 Bisogna implementare una funzionalità di calcolo delle retribuzioni e della gestione ferie.
 
-"""
-
-"""
-classe dipendenti
-classe con lista dipendenti (oggetti), accesso con password per il ceo
-
-switch menu, login, pw per dipendenti
-
-Menu generale:
-1 dipendente
-2 gestore
-3 esci
+Il programma si compone di 3 menù: 
+-il primo, il principale di login
+-gli altri due riferiti a quele utente ci accede: Gestore o Dipendente,a seconda di dove si accede le funzionalità cambiano
 
 Menu dipendenti (1):
-Chiedi nome, cognome, pw
-- Visualizza ferie
-- visualizza retribuzione
-- visualizza report
-- esci
+Chiedi nome, cognome, password
+Visualizza ferie
+visualizza retribuzione
+esci
 
 Menu gestore (2):
-Chiedi pw
-- Aggiungi dipendente
-- Modifica dipendente
-- Rimuovi dipendente
-- Genera report
-- esci
+Chiedi password
+Aggiungi dipendente
+Modifica dipendente
+Rimuovi dipendente
+Genera report
+esci
 
-Menu  modifica ...
+L'implementazione usa una classe padre (Persona) e due classi figlio (Dipendente e Gestore).
+La classe Persona contiene semplicemente le informazioni anagrafiche.
+La classe Dipendente contiene le informzioni di interesse dell'azienda.
+I metodi modificano le caratteristiche degli oggetti di tipo dipendente.
+La classe Gestore contiene le informazioni sul capo.
+I metodi vanno a modificare la lista dei dipendenti (sotto forma di istanze).
 
-ToDo
-- aggiungere calcolo salario
-- aggiungere controllo: esiste già un dipendente all'aggiunta?
-- Roadmap
-- risolvere bug
+Per accedere ai due diversi menu, bisogna effettuare un login.
+Per i dipendenti ciò avviene tramite la funzione login(), che a sua volta 
+richiama le funzioni controllo_esistenza_dipendente() per verificare l'esistenza 
+dipendente nella lista, e controllo_password_dipendente() per il controllo password.
+
 
 ROADMAP
-modifica tutto
-gestione permessi (ferie/ore uscita/malattia...)
-unicita utente
+
 
 
 """
@@ -54,26 +47,27 @@ import random
 
 # Setta variabili
 lista_dipendenti = []
-reparti = {1: "HR", 2: "ADMIN"}
-admin_password = "12345678"
-utente = -1
 
 
 # -------------------------------------------- CLASSI --------------------------------------------------------
 
 
 # Classe padre
+# attributi: nome, cognome
 class Persona:
-    # attributi: nome, cognome, password
+    # metodo costruttore con attributi: nome, cognome
     def __init__(self, nome, cognome):
         self.nome = nome
         self.cognome = cognome
 
+    # metodo toString(Stampa una stringa contenente gli attributi dichiarati in precedenza)
     def to_string(self):
         return f"nome: {self.nome}, cognome: {self.cognome}"
 
 
 # Classe figlio
+# attributi ereditati: nome, cognome
+# attributi proprietari: password, primo_ingresso, ore_ferie, inquadramento_aziendale, reparto
 class Dipendente(Persona):
     password = ""
     primo_ingresso = True
@@ -84,6 +78,7 @@ class Dipendente(Persona):
         self.inquadramento_aziendale = inquadramento_aziendale
         self.reparto = reparto
 
+    # metodo che genera una password d'accesso in maniera randomica
     def genera_password(self, n):
         self.password = ""
         char_list = [
@@ -160,6 +155,7 @@ class Dipendente(Persona):
             + f" lavora nel reparto {self.reparto} con un inquadramento_aziendale {self.inquadramento_aziendale}"
         )
 
+    # metodo che calcolo lo stipendio del Dipendente in base ad un parametro
     def calcola_stipendio(self):
         stipendio_base = {1: 1200, 2: 1500, 3: 2000, 4: 3000}
         coefficiente = {1: 1, 2: 1.1, 3: 1.2, 4: 1.3, 5: 1.4, 6: 1.5, 7: 2, 8: 2.5}
@@ -168,7 +164,7 @@ class Dipendente(Persona):
         )
         print(f"Il tuo stipendio è: {stipendio}€")
 
-    # metodo per modificare le ferie
+    # metodo per inserire le ferie
     def settaFerie(self):
         flag = True
         while flag:
@@ -190,24 +186,133 @@ class Dipendente(Persona):
                 flag = False
 
             else:
-                print(
-                    "Hai inserito un numero superiore a 5\n" "Inserisci numero valido\n"
+                print("Inserisci numero valido\n")
+
+
+class Gestore(Persona):
+    
+    password = "12345678"
+
+    def __init__(self, nome, cognome):
+        super().__init__(nome, cognome)
+
+    # Metodo che riguarda il gestore: Possibilità di aggiungere un dipendente
+    def aggiungi_dipendente(self):
+        print("Stai aggiungendo un nuovo dipendente")
+        nome = str(input("Inserisci il nome: ")).strip()
+        cognome = str(input("Inserisci il cognome: ")).strip()
+        # Controlla se l'utente esiste giá
+        if controllo_esistenza_dipendente(nome, cognome, lista_dipendenti) != "inesistente":
+            print("L'utente inserito è giá presente")
+            return None
+
+        inquadramento_aziendale = input("Inserisci l'inquadramento aziendale: ").strip()
+        reparto = input("Inserisci il reparto: ").strip()
+        # Verificare se l'inquadramento aziendale e reparto chiesti all'utente siano compresi nel range scelto
+        if controllo(1, 9, inquadramento_aziendale) and controllo(1, 5, reparto):
+            dipendente = Dipendente(
+                nome, cognome, int(inquadramento_aziendale), int(reparto)
+            )
+            lista_dipendenti.append(dipendente)
+            print("Dipendente aggiunto con successo")
+        else:
+            print(
+                "Errore,devi inserire un valore\n"
+                "tra 0 e 8 per l'inquadramento aziendale\n "
+                "e un valore tra 1 e 4 per il reparto\n"
+            )
+
+    # Metodo per gestore: modifica dipendente
+    def modifica_dipendente(self):
+        self.report()
+        flag = False
+        while not flag:
+            indice_dipendente = input("Seleziona il dipendente da modificare: \n").strip()
+            if controllo(0, len(lista_dipendenti), indice_dipendente):
+                indice_dipendente_int = int(indice_dipendente)
+                flag = True
+
+        flag = False
+        while not flag:
+            print("Scegli l'opzione desiderata: ")
+            print("1. Modifica nome")
+            print("2. Modifica cognome")
+            print("3. Modifica reparto")
+            print("4. Modifica inquadramento aziendale")
+            print("5. Esci")
+            variabile = input().strip()
+
+            if variabile == "1":
+                nuovo_nome = str(input("Inserisci il nuovo nome: ")).strip()
+                lista_dipendenti[indice_dipendente_int].nome = nuovo_nome
+
+            elif variabile == "2":
+                nuovo_cognome = str(input("Inserisci il nuovo cognome: ")).strip()
+                lista_dipendenti[indice_dipendente_int].cognome = nuovo_cognome
+
+            elif variabile == "3":
+                flag2 = False
+                while not flag2:
+                    nuovo_reparto = input("Inserisci il nuovo reparto\n").strip()
+                    if controllo(1, 5, nuovo_reparto):
+                        flag2 = True
+                lista_dipendenti[indice_dipendente_int].reparto = int(nuovo_reparto)
+
+            elif variabile == "4":
+                flag2 = False
+                while not flag2:
+                    nuovo_inquadramento_aziendale = input(
+                        "Inserisci il nuovo inquadramento aziendale\n"
+                    ).strip()
+                    if controllo(1, 9, nuovo_inquadramento_aziendale):
+                        flag2 = True
+                lista_dipendenti[indice_dipendente_int].inquadramento_aziendale = int(
+                    nuovo_inquadramento_aziendale
                 )
 
-    # attributi: inquadramento_aziendale, reparto
-    # metodo: calcolo_retribuzione, to_string (ereditato), scelta ferie
+            elif variabile == "5":
+                flag = True
+                continue
+
+            else:
+                print("Scegliere un comando valido")
+                continue
+
+            print("Modifica avvenuta con successo")
+            print(lista_dipendenti[indice_dipendente_int].to_string())
+
+
+    # Metodo per gestore: rimuovi dipendenti
+    def rimuovi_dipendente(self):
+        self.report()
+        indice_dipendente = int(
+            input("Seleziona il dipendente che hai deciso di rimuovere\n").strip()
+        )
+        lista_dipendenti.pop(indice_dipendente)
+        print("Dipendente rimosso")
+
+
+    # Metodo per gestore: stampa il report dipendenti
+    def report(self):
+        if lista_dipendenti == []:
+            print("Non ci sono dipendenti nella lista")
+        else:
+            print("Report:")
+            for iteratore, elemento in enumerate(lista_dipendenti):
+                print(f"{iteratore}. {elemento.to_string()}")
 
 
 # -------------------------------------------- FUNZIONI --------------------------------------------------------
-# login
+# Accedi
 def login():
     # Chiedi e controlla la pasword
     nome = input("Digita nome\n").strip()
     cognome = input("Digita cognome\n").strip()
     n_utente = controllo_esistenza_dipendente(nome, cognome, lista_dipendenti)
     if n_utente == "inesistente":
-        pass  # da implementare
+        print("\nErrore: dipendente non registrato.\n")
     else:
+        # Crea nuova password
         if lista_dipendenti[n_utente].primo_ingresso == True:
             print("È il tuo primo ingresso, digita la tua nuova password")
             password_digitata = input()
@@ -215,14 +320,14 @@ def login():
             lista_dipendenti[n_utente].password = password_digitata
             lista_dipendenti[n_utente].primo_ingresso = False
 
-        else:
-            if controllo_password_dipendente(lista_dipendenti, n_utente):
-                # Esegui fino che l'utente non ha finito
-                esci = False
-                while not esci:
-                    esci = menu_dipendente(n_utente)
+        # Controlla password
+        if controllo_password_dipendente(lista_dipendenti, n_utente):  
+            # Esegui fino che l'utente non ha finito
+            esci = False
+            while not esci:
+                esci = menu_dipendente(n_utente)
 
-
+#Funzione che controlla se un Dipendente sia registrato o meno nel sistema
 def controllo_esistenza_dipendente(nome, cognome, lista_dipendenti):
     # Cicla
     for iteratore, dipendente in enumerate(lista_dipendenti):
@@ -230,11 +335,10 @@ def controllo_esistenza_dipendente(nome, cognome, lista_dipendenti):
             print("L'utente esiste")
             return iteratore
     else:
-        print("\nErrore: dipendente non registrato.\n")
         return "inesistente"
 
 
-# Funzione per verificare che l'utente sia presente e conosca la pw corretta
+# Funzione per verificare che l'utente digiti la password corretta
 def controllo_password_dipendente(lista_dipendenti, n_utente):
     print("Stai entranto come dipendente, digita la password")
     password_digitata = input()
@@ -248,92 +352,7 @@ def controllo_password_dipendente(lista_dipendenti, n_utente):
         return False
 
 
-# Funzionalita per gestore: aggiungi dipendenti
-def aggiungi_dipendente():
-    print("Stai aggiungendo un nuovo dipendente")
-    nome = str(input("Inserisci il nome: ")).strip()
-    cognome = str(input("Inserisci il cognome: ")).strip()
-    # Controlla se l'utente esiste giá
-    if controllo_esistenza_dipendente(nome, cognome, lista_dipendenti) != "inesistente":
-        print("L'utente inserito è giá presente")
-        return None
-
-    inquadramento_aziendale = input("Inserisci l'inquadramento aziendale: ").strip()
-    reparto = input("Inserisci il reparto: ").strip()
-    # aggiungi funzione controllo
-    if controllo(1, 9, inquadramento_aziendale) and controllo(1, 5, reparto):
-        dipendente = Dipendente(
-            nome, cognome, int(inquadramento_aziendale), int(reparto)
-        )
-        lista_dipendenti.append(dipendente)
-        print("Dipendente aggiunto con successo")
-    else:
-        print(
-            "Errore,devi inserire un valore\n"
-            "tra 0 e 8 per l'inquadramento aziendale\n "
-            "e un valore tra 1 e 4 per il reparto\n"
-        )
-
-
-def modifica_dipendente():
-    report()
-    flag = False
-    while not flag:
-        indice_dipendente = input("Seleziona il dipendente da modificare: \n").strip()
-        if controllo(0, len(lista_dipendenti), indice_dipendente):
-            indice_dipendente_int = int(indice_dipendente)
-            flag = True
-
-    flag = False
-    while not flag:
-        print("Scegli l'opzione desiderata: ")
-        print("1. Modifica nome")
-        print("2. Modifica cognome")
-        print("3. Modifica reparto")
-        print("4. Modifica inquadramento aziendale")
-        print("5. Esci")
-        variabile = input().strip()
-
-        if variabile == "1":
-            nuovo_nome = str(input("Inserisci il nuovo nome: ")).strip()
-            lista_dipendenti[indice_dipendente_int].nome = nuovo_nome
-
-        elif variabile == "2":
-            nuovo_cognome = str(input("Inserisci il nuovo cognome: ")).strip()
-            lista_dipendenti[indice_dipendente_int].cognome = nuovo_cognome
-
-        elif variabile == "3":
-            flag2 = False
-            while not flag2:
-                nuovo_reparto = input("Inserisci il nuovo reparto\n").strip()
-                if controllo(1, 5, nuovo_reparto):
-                    flag2 = True
-            lista_dipendenti[indice_dipendente_int].reparto = int(nuovo_reparto)
-
-        elif variabile == "4":
-            flag2 = False
-            while not flag2:
-                nuovo_inquadramento_aziendale = input(
-                    "Inserisci il nuovo inquadramento aziendale\n"
-                ).strip()
-                if controllo(1, 9, nuovo_inquadramento_aziendale):
-                    flag2 = True
-            lista_dipendenti[indice_dipendente_int].inquadramento_aziendale = int(
-                nuovo_inquadramento_aziendale
-            )
-
-        elif variabile == "5":
-            flag = True
-            continue
-
-        else:
-            print("Scegliere un comando valido")
-            continue
-
-        print("Modifica avvenuta con successo")
-        print(lista_dipendenti[indice_dipendente_int].to_string())
-
-
+# Funzione controllo: verifica se un elemento (str) sia compreso nel range tra a e b (int)
 def controllo(a, b, elemento):
     valori_accettabili = [str(iteratore) for iteratore in range(a, b)]
     if elemento in valori_accettabili:
@@ -342,28 +361,10 @@ def controllo(a, b, elemento):
         return False
 
 
-# Funzionalita per gestore: rimuovi dipendenti
-def rimuovi_dipendente():
-    report()
-    indice_dipendente = int(
-        input("Seleziona il dipendente che hai deciso di rimuovere\n").strip()
-    )
-    lista_dipendenti.pop(indice_dipendente)
-    print("Dipendente rimosso")
 
-
-# Funzionalita per gestore: stampa il report
-def report():
-    if lista_dipendenti == []:
-        print("Non ci sono dipendenti nella lista")
-    else:
-        for iteratore, elemento in enumerate(lista_dipendenti):
-            print(f"{iteratore}. {elemento.to_string()}")
-
-
-# MENU scelte dipendente: stampa retribuzione o gestisci ferie
+# MENU scelte dipendente: permette di visualizzare la propria retribuzione o di aggiungere ore di ferie
 def menu_dipendente(n_utente):
-    print("Scegli l'opzione desiderata: ")
+    print("\nScegli l'opzione desiderata: ")
     print("1. Visualizza la propria retribuzione")
     print("2. Aggiungi giorni ferie")
     print("3. Esci")
@@ -371,7 +372,7 @@ def menu_dipendente(n_utente):
     variabile = input().strip()
 
     if variabile == "1":
-        lista_dipendenti[n_utente].calcolo_stipendio()
+        lista_dipendenti[n_utente].calcola_stipendio()
 
     elif variabile == "2":
         lista_dipendenti[n_utente].settaFerie()
@@ -383,9 +384,9 @@ def menu_dipendente(n_utente):
         print("Scegliere un comando valido")
 
 
-# MENU scelta gestore: gestisci lista dipendenti (CRUD) o stampa report
-def menu_gestore():
-    print("Scegli l'opzione desiderata: ")
+# MENU scelta gestore: Permette la gestione del sistema CRUD ,di Stampare il report dei dipendenti o di Uscire dal Sistema
+def menu_gestore(gestore):
+    print("\nScegli l'opzione desiderata: ")
     print("1. Aggiungi dipendenti")
     print("2. Modificare un dipendente")
     print("3. Rimuovi dipendenti")
@@ -395,16 +396,16 @@ def menu_gestore():
     variabile = input().strip()
 
     if variabile == "1":
-        aggiungi_dipendente()
+        gestore.aggiungi_dipendente()
 
     elif variabile == "2":
-        modifica_dipendente()
+        gestore.modifica_dipendente()
 
     elif variabile == "3":
-        rimuovi_dipendente()
+        gestore.rimuovi_dipendente()
 
     elif variabile == "4":
-        report()
+        gestore.report()
 
     elif variabile == "5":
         return "esci"  # True
@@ -417,20 +418,21 @@ def menu_gestore():
 
 
 # Inizio codice
+gestore = Gestore("Luca", "Onesto")
 dip1 = Dipendente("Mario", "Rossi", 1, 2)
 dip2 = Dipendente("Luigi", "Bianchi", 3, 4)
 dip1.genera_password(4)
 dip2.genera_password(4)
 lista_dipendenti.append(dip1)
 lista_dipendenti.append(dip2)
-dip1.calcola_stipendio()
+#dip1.calcola_stipendio()
 
 
 # Inizia I/O: ripeti richiesta scelta per output errati, altrimenti esci
 # flag = False
-flag = True
+flag = False
 while not flag:
-    print("Scegli il tipo di account: ")
+    print("\nScegli il tipo di account: ")
     print("1. Account gestore")
     print("2. Account dipendente")
     print("3. Esci")
@@ -438,16 +440,16 @@ while not flag:
     variabile = input().strip()
 
     if variabile == "1":
-        # Chiedi e controlla la pasword
+        # Chiedi e controlla la password
         print("Stai entranto come gestore, digita la password")
         password_digitata = input()
-        if password_digitata != admin_password:
+        if password_digitata != gestore.password:
             print("Password errata! Chiusura del programma in corso...")
         else:
             # Esegui azioni fino che l'utente non ha finito
             esci = False
             while not esci:
-                esci = menu_gestore()
+                esci = menu_gestore(gestore)
 
     elif variabile == "2":
         login()
