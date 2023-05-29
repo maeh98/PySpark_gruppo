@@ -3,17 +3,25 @@ def menu_dipendente(n_utente, lista_dipendenti):
     print("\nScegli l'opzione desiderata: ")
     print("1. Visualizza la propria retribuzione")
     print("2. Aggiungi giorni ferie")
-    print("3. Esci")
+    print("3. Modifica password")
+    print("4. Inserisci ore lavorate")
+    print("5. Esci")
 
     variabile = input().strip()
 
     if variabile == "1":
-        lista_dipendenti[n_utente].calcola_stipendio()
+        lista_dipendenti[n_utente].premio()
 
     elif variabile == "2":
         lista_dipendenti[n_utente].settaFerie()
-
+    
     elif variabile == "3":
+        lista_dipendenti[n_utente].modificaPassword()
+
+    elif variabile == "4":
+        lista_dipendenti[n_utente].inserisciOre()
+
+    elif variabile == "5":
         return "esci"
 
     else:

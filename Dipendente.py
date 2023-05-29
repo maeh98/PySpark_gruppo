@@ -9,6 +9,9 @@ class Dipendente(Persona):
     password = ""
     primo_ingresso = True
     ore_Ferie = 0
+    char_array = "0123456789QWERTZUIOPASDFGHJKLYXCVBNMqwertzuiopasdfghjklyxcvbnm"
+    ore_lavorate = 40
+
 
     def __init__(self, nome, cognome, inquadramento_aziendale, reparto):
         super().__init__(nome, cognome)
@@ -18,72 +21,8 @@ class Dipendente(Persona):
     # metodo che genera una password d'accesso in maniera randomica
     def genera_password(self, n):
         self.password = ""
-        char_list = [
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "A",
-            "a",
-            "B",
-            "b",
-            "C",
-            "c",
-            "D",
-            "d",
-            "E",
-            "e",
-            "F",
-            "f",
-            "G",
-            "g",
-            "H",
-            "h",
-            "I",
-            "i",
-            "J",
-            "j",
-            "K",
-            "k",
-            "L",
-            "l",
-            "M",
-            "m",
-            "N",
-            "n",
-            "O",
-            "o",
-            "P",
-            "p",
-            "Q",
-            "q",
-            "R",
-            "r",
-            "S",
-            "s",
-            "T",
-            "t",
-            "U",
-            "u",
-            "V",
-            "v",
-            "W",
-            "w",
-            "X",
-            "x",
-            "Y",
-            "y",
-            "Z",
-            "z",
-        ]
         for i in range(0, n):
-            self.password += char_list[random.randint(0, 61)]
+            self.password += self.char_array[random.randint(0, 61)]
         return self.password
 
     def to_string(self):
@@ -99,7 +38,29 @@ class Dipendente(Persona):
         stipendio = (
             stipendio_base[self.reparto] * coefficiente[self.inquadramento_aziendale]
         )
-        print(f"Il tuo stipendio è: {stipendio}€")
+        return stipendio
+
+    def premio(self):
+        if 20 <= self.ore_lavorate <= 40:
+            bonus = 0.1
+            print(f"Lo stipendio incluso il bonus è: {self.calcola_stipendio() * (1 + bonus) * self.ore_lavorate / 40: ,.2f}€")
+        elif self.ore_lavorate < 20:
+            bonus = 0
+            print(f"Il tuo stipendio è: {self.calcola_stipendio() * self.ore_lavorate / 40: ,.2f}€")
+        elif self.ore_lavorate > 40:
+            bonus = 0.2
+            print(f"Lo stipendio incluso il superbonus è: {self.calcola_stipendio() * (1 + bonus) * self.ore_lavorate / 40: ,.2f}€")
+
+    def inserisciOre(self):
+        flag = False
+        while not flag:
+            print("Inserisci un numero di ore lavorate da 0 a 60")
+            numero_ore = input()
+            if controllo(0, 60, numero_ore):
+                self.ore_lavorate = int(numero_ore)
+                flag = True
+            else:
+                print("Valore non accettabile")
 
     # metodo per inserire le ferie
     def settaFerie(self):
@@ -125,3 +86,54 @@ class Dipendente(Persona):
             else:
                 print("Inserisci numero valido\n")
 
+    def modificaPassword(self):
+        flag = False
+        while not flag:
+            print("Imposta la tua nuova password")
+            print("1. Generare una password randomizzata")
+            print("2. Digita la nuova password")
+            print("3. Esci")
+            scelta = input("Inserisci la tua risposta\n")
+            if scelta == "1":
+                self.genera_password(8)
+                print(f"La password randomizzata è: {self.password}")
+                flag = True
+            
+            elif scelta == "2":
+                flag2 = False
+                while not flag2:
+                    print("Digita la nuova password, deve contenere almeno 8 caratteri alfanumerici")
+                    nuova_password = input()
+                    pw_ok = True
+
+                    if len(nuova_password) < 8:
+                        print("Errore, password troppo corta")
+                        pw_ok = False
+                        continue
+
+                    else:
+                        for i in range(0, len(nuova_password)):
+                            if nuova_password[i] not in self.char_array:
+                                print("Carattere non ammesso, utilizza 0-9, a-z, A-Z")
+                                pw_ok = False
+                                break
+                    
+                    if pw_ok == True:
+                        self.password = nuova_password
+                        print("Password modificata correttamente")
+                        flag2 = True
+
+            elif scelta == "3":
+                print("Stai uscendo dal sistema...")
+                flag = True
+
+            else:
+                print("Inserisci numero valido\n")
+
+dip1 = Dipendente("topo", "lino", 2, 2)
+print(dip1.to_string())
+#dip1.modificaPassword()
+#print(dip1.password)
+dip1.inserisciOre()
+print(f"Hai lavorato {dip1.ore_lavorate} ore")
+print(dip1.premio())
