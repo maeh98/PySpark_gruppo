@@ -26,6 +26,8 @@ Menu dipendenti (1):
 Chiedi nome, cognome, password
 Visualizza ferie
 visualizza retribuzione
+Inserisci ore lavorate
+Modifica Password
 esci
 
 Menu gestore (2):
